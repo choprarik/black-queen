@@ -1,4 +1,4 @@
-package com.blackQueen.userManagementService.dao;
+package com.blackQueen.userManagementService.dbRepo;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 

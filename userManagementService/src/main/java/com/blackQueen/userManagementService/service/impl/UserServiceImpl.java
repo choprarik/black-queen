@@ -1,13 +1,11 @@
 package com.blackQueen.userManagementService.service.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.blackQueen.userManagementService.dao.UserRepository;
+import com.blackQueen.userManagementService.dao.UserManagementDao;
 import com.blackQueen.userManagementService.models.User;
 import com.blackQueen.userManagementService.service.UserService;
 
@@ -15,27 +13,26 @@ import com.blackQueen.userManagementService.service.UserService;
 public class UserServiceImpl implements UserService {
 	
 	@Autowired
-	UserRepository userRepo;
+	UserManagementDao userDao;
 
 	public List<User> getUsers() {
-		return userRepo.findAll();
+		return userDao.getUsers();
 	}
 
 	public User getUser(String id) {
-		return userRepo.findById(id).get();
+		return userDao.getUser(id);
 	}
 
 	public String addUser(User user) {
-		User newUser = userRepo.save(user);
-		return newUser.getId();
+		return userDao.addUser(user);
 	}
 
 	public User updateUser(User user) {
-		return userRepo.save(user);
+		return userDao.updateUser(user);
 	}
 
 	public void deleteUser(String id) {
-		userRepo.deleteById(id);
+		userDao.deleteUser(id);
 	}
 
 }
