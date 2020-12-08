@@ -54,6 +54,12 @@ public class PropertiesHolder {
 		return userCreatedKey;
 	}
 	
+	/**
+	 * Returns message from the bundler
+	 * @param key - error key
+	 * @param args
+	 * @return
+	 */
 	public String getMessage(String key, String... args) {
 		String str = languageMap.get(key);
 		if (args.length > 0) {

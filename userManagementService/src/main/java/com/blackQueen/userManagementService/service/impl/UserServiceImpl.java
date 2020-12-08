@@ -29,12 +29,22 @@ public class UserServiceImpl implements UserService {
 		return userDao.addUser(user);
 	}
 
-	public User updateUser(User user) throws InternalServerException {
-		return userDao.updateUser(user);
+	public User updateUser(User user) throws InternalServerException, UserNotFoundException {
+		User updatedUser = null;
+		if (userDao.isUserExists(user.getId())) {
+			updatedUser = userDao.updateUser(user);	
+		} else {
+			throw new UserNotFoundException();
+		}
+		return updatedUser;
 	}
 
-	public void deleteUser(String id) throws InternalServerException {
-		userDao.deleteUser(id);
+	public void deleteUser(String id) throws InternalServerException, UserNotFoundException {
+		if (userDao.isUserExists(id)) {
+			userDao.deleteUser(id);
+		} else {
+			throw new UserNotFoundException();
+		}
 	}
 
 }

@@ -16,6 +16,11 @@ public class UserManagementDao {
 	@Autowired
 	UserRepository userRepo;
 
+	/**
+	 * Get list of users from DB.
+	 * @return user list
+	 * @throws UserNotFoundException
+	 */
 	public List<User> getUsers() throws UserNotFoundException {
 		List<User> users = null;
 		try {
@@ -26,6 +31,12 @@ public class UserManagementDao {
 		return users;
 	}
 
+	/**
+	 * Get user for id from DB.
+	 * @param id
+	 * @return user item
+	 * @throws UserNotFoundException
+	 */
 	public User getUser(String id) throws UserNotFoundException {
 		User user = null;
 		try {
@@ -36,6 +47,12 @@ public class UserManagementDao {
 		return user;
 	}
 
+	/**
+	 * Add a user to DB.
+	 * @param user
+	 * @return id of added user.
+	 * @throws InternalServerException
+	 */
 	public String addUser(User user) throws InternalServerException {
 		String id = null;
 		try {
@@ -47,6 +64,12 @@ public class UserManagementDao {
 		return id;
 	}
 
+	/**
+	 * Update an existing user in DB.
+	 * @param user
+	 * @return updated user
+	 * @throws InternalServerException
+	 */
 	public User updateUser(User user) throws InternalServerException {
 		User updatedUser = null;
 		try {
@@ -57,11 +80,25 @@ public class UserManagementDao {
 		return updatedUser;
 	}
 
+	/**
+	 * Delete user from DB.
+	 * @param id
+	 * @throws InternalServerException
+	 */
 	public void deleteUser(String id) throws InternalServerException {
 		try {
 			userRepo.deleteById(id);
 		} catch (Exception e) {
 			throw new InternalServerException();
 		}
+	}
+	
+	/**
+	 * Returns true if user exists.
+	 * @param id
+	 * @return
+	 */
+	public boolean isUserExists(String id) {
+		return userRepo.existsById(id);
 	}
 }

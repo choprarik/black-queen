@@ -1,7 +1,5 @@
 package com.blackQueen.userManagementService.models;
 
-import java.util.Date;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.lang.NonNull;
@@ -13,10 +11,11 @@ public class User {
 	private String id = "";
 	@NonNull
 	private String name = "";
-	private Date dob;
-	
 	@NonNull
 	private String email =  "";
+	private int age = 0;
+	
+	
 	/**
 	 * @return the name
 	 */
@@ -42,22 +41,32 @@ public class User {
 		this.id = id;
 	}
 	/**
-	 * @return the dob
+	 * 
+	 * @return the email
 	 */
-	public Date getDob() {
-		return dob;
-	}
-	/**
-	 * @param dob the dob to set
-	 */
-	public void setDob(Date dob) {
-		this.dob = dob;
-	}
 	public String getEmail() {
 		return email;
 	}
+	/**
+	 * 
+	 * @param email the email to set
+	 */
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	/**
+	 * 
+	 * @return the age
+	 */
+	public int getAge() {
+		return age;
+	}
+	/**
+	 * 
+	 * @param age the age to set
+	 */
+	public void setAge(int age) {
+		this.age = age;
 	}
 	
 }
