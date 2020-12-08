@@ -4,14 +4,18 @@ import java.util.Date;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.lang.NonNull;
 
 @Document(collection = "user")
 public class User {
 	
 	@Id
 	private String id = "";
+	@NonNull
 	private String name = "";
 	private Date dob;
+	
+	@NonNull
 	private String email =  "";
 	/**
 	 * @return the name
