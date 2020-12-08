@@ -5,10 +5,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.blackQueen.commons.models.User;
 import com.blackQueen.userManagementService.dbRepo.UserRepository;
 import com.blackQueen.userManagementService.exceptions.InternalServerException;
 import com.blackQueen.userManagementService.exceptions.UserNotFoundException;
-import com.blackQueen.userManagementService.models.User;
 
 @Service
 public class UserManagementDao {

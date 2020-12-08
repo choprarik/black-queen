@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.blackQueen.commons.models.User;
 import com.blackQueen.userManagementService.exceptions.InternalServerException;
 import com.blackQueen.userManagementService.exceptions.InvalidRequestException;
 import com.blackQueen.userManagementService.exceptions.UserNotFoundException;
-import com.blackQueen.userManagementService.models.User;
 import com.blackQueen.userManagementService.properties.PropertiesHolder;
 import com.blackQueen.userManagementService.response.ErrorResponseVO;
 import com.blackQueen.userManagementService.response.UserResponseVO;

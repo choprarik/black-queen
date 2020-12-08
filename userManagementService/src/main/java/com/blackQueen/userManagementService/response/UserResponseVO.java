@@ -1,7 +1,7 @@
 package com.blackQueen.userManagementService.response;
 import java.util.List;
 
-import com.blackQueen.userManagementService.models.User;
+import com.blackQueen.commons.models.User;
 
 public class UserResponseVO {
 	

@@ -3,9 +3,9 @@ package com.blackQueen.userManagementService.service;
 
 import java.util.List;
 
+import com.blackQueen.commons.models.User;
 import com.blackQueen.userManagementService.exceptions.InternalServerException;
 import com.blackQueen.userManagementService.exceptions.UserNotFoundException;
-import com.blackQueen.userManagementService.models.User;
 
 public interface UserService {
 	
