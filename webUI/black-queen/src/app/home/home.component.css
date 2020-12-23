@@ -1,0 +1,16 @@
+.spacer {
+    flex: 1 1 auto;
+}
+.button-container {
+    display: flex;
+    justify-content: center;
+    width: 120px;
+}
+table {
+    width: 100%;
+}
+.table-container {
+    position: relative;
+    max-height: 300px;
+    overflow: auto;
+  }

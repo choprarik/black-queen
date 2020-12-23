@@ -8,12 +8,14 @@
 		<version>2.4.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.black_queen</groupId>
-	<artifactId>user-management-service</artifactId>
+	<groupId>com.blackQueen</groupId>
+	<artifactId>roomManagementService</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<name>roomManagementService</name>
+	<description>Room CRUD operations</description>
+
 	<properties>
 		<java.version>1.8</java.version>
-		<spring-cloud.version>2020.0.0-RC1</spring-cloud.version>
 	</properties>
 
 	<dependencies>
@@ -27,17 +29,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.black_queen</groupId>
+			<groupId>com.blackQueen</groupId>
   			<artifactId>commons</artifactId>
   			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
 		</dependency>
 	</dependencies>
 
@@ -50,22 +44,4 @@
 		</plugins>
 	</build>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>${spring-cloud.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-	<repositories>
-		<repository>
-			<id>spring-milestones</id>
-			<name>Spring Milestones</name>
-			<url>https://repo.spring.io/milestone</url>
-		</repository>
-	</repositories>
 </project>

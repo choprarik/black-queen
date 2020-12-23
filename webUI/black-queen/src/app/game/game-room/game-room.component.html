@@ -1,0 +1,115 @@
+<div class="gameroom">
+  <!-- Played Cards Row -->
+  <div class="row no-gutters">
+    <div class="col-12">
+      <mat-grid-list cols="6" rowHeight="1:2">
+        <mat-grid-tile>
+          <div class="row no-gutters justify-content-center">
+            <div class="col-4">
+              <div class="row no-gutters">
+                <div class="col" align="center">
+                  <div class="badge badge-pill badge-primary mx-auto">Player 1</div>
+                </div>
+              </div>
+              <div class="row no-gutters">
+                <div class="col" align="center">
+                  <app-card [card]="players[0]?.card"></app-card>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <div class="row no-gutters justify-content-center">
+            <div class="col-4">
+              <div class="row no-gutters">
+                <div class="col" align="center">
+                  <div class="badge badge-pill badge-primary mx-auto">Player 2</div>
+                </div>
+              </div>
+              <div class="row no-gutters">
+                <div class="col" align="center">
+                  <app-card [card]="players[1]?.card"></app-card>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <div class="row no-gutters justify-content-center">
+            <div class="col-4">
+              <div class="row no-gutters">
+                <div class="col" align="center">
+                  <div class="badge badge-pill badge-primary mx-auto">Player 3</div>
+                </div>
+              </div>
+              <div class="row no-gutters">
+                <div class="col" align="center">
+                  <app-card [card]="players[2]?.card"></app-card>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <div class="row no-gutters justify-content-center">
+            <div class="col-4">
+              <div class="row no-gutters">
+                <div class="col" align="center">
+                  <div class="badge badge-pill badge-primary mx-auto">Player 4</div>
+                </div>
+              </div>
+              <div class="row no-gutters">
+                <div class="col" align="center">
+                  <app-card [card]="players[3]?.card"></app-card>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <div class="row no-gutters justify-content-center">
+            <div class="col-4">
+              <div class="row no-gutters">
+                <div class="col" align="center">
+                  <div class="badge badge-pill badge-primary mx-auto">Player 5</div>
+                </div>
+              </div>
+              <div class="row no-gutters">
+                <div class="col" align="center">
+                  <app-card [card]="players[4]?.card"></app-card>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <div class="row no-gutters justify-content-center">
+            <div class="col-4">
+              <div class="row no-gutters">
+                <div class="col" align="center">
+                  <div class="badge badge-pill badge-primary mx-auto">Player 6</div>
+                </div>
+              </div>
+              <div class="row no-gutters">
+                <div class="col" align="center">
+                  <app-card [card]="players[5]?.card"></app-card>
+                </div>
+              </div>
+              <div class="row no-gutters">
+                <div class="col" align="center">
+                  <div class="badge badge-pill badge-primary mx-auto">Points</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-grid-tile>
+      </mat-grid-list>
+    </div>
+  </div>
+  <div class="card-list-container">
+    <div class="card-container" *ngFor="let card of listPlayerCards">
+      <app-card [card]="card" (clickedCardEmitter)="clickedCard($event)"></app-card>
+    </div>
+  </div>
+</div>

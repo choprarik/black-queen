@@ -1,0 +1,15 @@
+.form {
+    min-width: 150px;
+    max-width: 500px;
+    width: 100%;
+    padding: 15px
+}
+  
+.card {
+    width: 20%;
+    position: absolute;
+    align-items: center;
+    justify-content: center;
+    margin-top: 120px;
+    margin-left: 480px;
+}

@@ -1,0 +1,8 @@
+<mat-list>
+    <mat-list-item *ngFor="let notif of notificationService.notifications">
+        <button>
+            <div>{{notif.title}}</div><br>
+            <div>{{notif.text}}</div>
+        </button>
+    </mat-list-item>
+</mat-list>

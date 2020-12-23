@@ -1,0 +1,81 @@
+<main>
+    <mat-toolbar color="basic">
+          <span>Black Queen</span>
+          <span class="spacer"></span>
+          <button mat-icon-button [matMenuTriggerFor]="notificationsPopover">
+            <mat-icon [matBadge]="notificationService.notificationNumbers" matBadgeColor="warn">notifications</mat-icon>
+            <!-- Include text description of the icon's meaning for screen-readers -->
+            <span class="cdk-visually-hidden">
+                Example with a home icon with overlaid badge showing the number 15
+            </span>
+          </button>
+          <div class="button-container">
+            <button mat-mini-fab color="primary">
+              <mat-icon>person</mat-icon>
+            </button>
+          </div>
+    </mat-toolbar>
+    <div style="margin: 20px;">
+      <mat-grid-list cols="3" gutterSize="12" rowHeight="450px">
+        <mat-grid-tile [colspan]="2">
+          <mat-card style="width: 95%; height: 90%;" class="primary">
+            <mat-card-header>
+              <mat-card-title style="margin: 16px;">Rooms</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <mat-grid-list cols="1" gutterSize="12" rowHeight="250px"></mat-grid-list>
+              <mat-grid-list cols="2" gutterSize="12" rowHeight="100px">
+                <mat-grid-tile>
+                  <button mat-raised-button color="primary">Create Room</button>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                  <button mat-raised-button color="primary">Join Room</button>
+                </mat-grid-tile>
+              </mat-grid-list>
+            </mat-card-content>
+          </mat-card> 
+        </mat-grid-tile>
+        <mat-grid-tile [colspan]="1">
+          <mat-card style="width: 95%; height: 90%;" class="secondary">
+            <mat-card-header style="margin: 16px;">
+              <div mat-card-avatar>
+                <mat-icon>emoji_events</mat-icon>
+              </div>
+              <mat-card-title>Leader Board</mat-card-title>
+            </mat-card-header>
+              <mat-card-content class="table-container">
+                <table mat-table [dataSource]="dataSource">
+
+                  <!--- Note that these columns can be defined in any order.
+                        The actual rendered columns are set as a property on the row definition" -->
+                
+                  <!-- Rank Column -->
+                  <ng-container matColumnDef="rank">
+                    <th mat-header-cell *matHeaderCellDef> Rank</th>
+                    <td mat-cell *matCellDef="let element"> {{element.rank}} </td>
+                  </ng-container>
+                
+                  <!-- Name Column -->
+                  <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef> Name </th>
+                    <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+                  </ng-container>
+                
+                  <!-- Points Column -->
+                  <ng-container matColumnDef="points">
+                    <th mat-header-cell *matHeaderCellDef>Points</th>
+                    <td mat-cell *matCellDef="let element"> {{element.points}} </td>
+                  </ng-container>
+                
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+              </mat-card-content>
+          </mat-card>
+        </mat-grid-tile>
+      </mat-grid-list>
+    </div>
+</main>
+<mat-menu #notificationsPopover xPosition="before" class="p0">
+  <app-notifications></app-notifications>
+</mat-menu>
