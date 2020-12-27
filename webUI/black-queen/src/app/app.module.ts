@@ -4,17 +4,19 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing/app-routing.module';
 import { AppComponent } from './app.component';
+import { CoreModule } from './core/core.module';
 import { GameModule } from './game/game.module';
 import { HomeComponent } from './home/home.component';
 import { LoginModule } from './login/login.module';
 import { MaterialModule } from './material/material.module';
-import { NotificationsComponent } from './notifications/notifications.component';
+import { JoinRoomComponent } from './join-room/join-room.component';
+import { RoomModule } from './room/room.module';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    NotificationsComponent
+    JoinRoomComponent
   ],
   imports: [
     BrowserModule,
@@ -23,7 +25,9 @@ import { NotificationsComponent } from './notifications/notifications.component'
     MaterialModule,
     LoginModule,
     GameModule,
-    AppRoutingModule
+    AppRoutingModule,
+    CoreModule,
+    RoomModule
   ],
   exports: [
     FormsModule,

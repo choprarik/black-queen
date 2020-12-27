@@ -1,0 +1,12 @@
+<h1 mat-dialog-title>Join Room</h1>
+<div mat-dialog-content>
+  <p>Provide room ID to join</p>
+  <mat-form-field>
+    <mat-label>Room ID</mat-label>
+    <input matInput [(ngModel)]="roomId">
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-raised-button (click)="cancel()">Cancel</button>
+  <button mat-raised-button color="primary" [ngStyle]="{'disabled': !roomId}" (click)="joinRoom()" cdkFocusInitial>Join</button>
+</div>

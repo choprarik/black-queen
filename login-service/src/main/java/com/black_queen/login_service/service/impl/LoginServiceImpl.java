@@ -6,12 +6,12 @@ package com.black_queen.login_service.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.black_queen.commons.models.LoginData;
+import com.black_queen.commons.models.SignUp;
 import com.black_queen.login_service.clients.UserClient;
 import com.black_queen.login_service.dao.LoginDataDao;
 import com.black_queen.login_service.exceptions.InvalidUsernameOrPassword;
 import com.black_queen.login_service.jwt.JwtTokenProvider;
-import com.black_queen.login_service.models.LoginData;
-import com.black_queen.login_service.models.SignUp;
 import com.black_queen.login_service.service.LoginService;
 
 import lombok.extern.slf4j.Slf4j;

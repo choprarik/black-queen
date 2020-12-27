@@ -3,6 +3,8 @@ package com.black_queen.user_management_service.controller;
 import java.util.List;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ import com.black_queen.commons.exceptions.FriendAlreadyExistsException;
 import com.black_queen.commons.exceptions.InvalidRequestException;
 import com.black_queen.commons.exceptions.UserNotFoundException;
 import com.black_queen.commons.models.Friend;
+import com.black_queen.commons.models.IdDTO;
 import com.black_queen.commons.models.User;
 import com.black_queen.user_management_service.properties.PropertiesHolder;
 import com.black_queen.user_management_service.response.SuccessResponseVO;
@@ -28,6 +31,8 @@ import com.black_queen.user_management_service.service.UserService;
 
 @RestController
 public class UserController {
+	
+	private Logger LOG = LoggerFactory.getLogger(UserController.class);
 	
 	@Autowired
 	UserService userService;
@@ -46,6 +51,7 @@ public class UserController {
 	 */
 	@GetMapping("/users")
 	public UserResponseVO getUsers() throws UserNotFoundException {
+		LOG.info("In users api.");
 		UserResponseVO responseVO = new UserResponseVO();
 		responseVO.setUsers(userService.getUsers());
 		return responseVO;
@@ -60,6 +66,7 @@ public class UserController {
 	 */
 	@GetMapping("/user")
 	public User getUser(@RequestParam("id") String id) throws UserNotFoundException, InvalidRequestException {
+		LOG.info("In user get api with id " + id);
 		if (id.isEmpty()) {
 			throw new InvalidRequestException();
 		}
@@ -74,14 +81,16 @@ public class UserController {
 	 * @throws InternalServerException
 	 */
 	@PostMapping("/user")
-	public ResponseEntity<String> addUser(@RequestBody User user) throws Exception {
+	public ResponseEntity<IdDTO> addUser(@RequestBody User user) throws Exception {
 		if (user.getName().isEmpty() || user.getEmail().isEmpty()) {
 			throw new InvalidRequestException();
 		}
 		// set UUID for every new user
 		user.setId(UUID.randomUUID().toString());
 		String id = userService.addUser(user);
-		return new ResponseEntity<String>(id, HttpStatus.CREATED);
+		IdDTO result = new IdDTO();
+		result.setId(id);
+		return new ResponseEntity<IdDTO>(result, HttpStatus.CREATED);
 	}
 	
 	/**

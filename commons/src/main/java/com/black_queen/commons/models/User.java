@@ -18,6 +18,7 @@ public class User {
 	private String email =  "";
 	private int age = 0;
 	private List<Friend> friends = new ArrayList<Friend>();
+	private int points = 0;
 	
 	
 	/**
@@ -83,6 +84,18 @@ public class User {
 	 */
 	public void setFriends(List<Friend> friends) {
 		this.friends = friends;
+	}
+	/**
+	 * @return the points
+	 */
+	public int getPoints() {
+		return points;
+	}
+	/**
+	 * @param points the points to set
+	 */
+	public void setPoints(int points) {
+		this.points = points;
 	}
 	
 }

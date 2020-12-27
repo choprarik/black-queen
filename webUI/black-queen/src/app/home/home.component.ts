@@ -1,25 +1,17 @@
-import { Component } from "@angular/core";
-import { OnInit } from "@angular/core";
-import { NotificationService } from "../notifications/notification.service";
+import { Component, OnInit } from "@angular/core";
+import { MatDialog } from "@angular/material/dialog";
+import { Router } from "@angular/router";
+import { UsersModel } from "../core/models/users.model";
+import { RoomService } from "../core/room.service";
+import { UserService } from "../core/user.service";
+import { JoinRoomComponent } from "../join-room/join-room.component";
+import { RoomModel } from "../room/models/room.model";
 
 export interface PlayerRank {
   name: string;
   rank: number;
   points: number;
 }
-
-const LEADERBOARD_DATA: PlayerRank[] = [
-  { rank: 1, name: 'Hydrogen', points: 1.0079 },
-  {rank: 2, name: 'Helium', points: 4.0026 },
-  {rank: 3, name: 'Lithium', points: 6.941 },
-  {rank: 4, name: 'Beryllium', points: 9.0122 },
-  {rank: 5, name: 'Boron', points: 10.811 },
-  {rank: 6, name: 'Carbon', points: 12.0107 },
-  {rank: 7, name: 'Nitrogen', points: 14.0067 },
-  {rank: 8, name: 'Oxygen', points: 15.9994 },
-  {rank: 9, name: 'Fluorine', points: 18.9984 },
-  {rank: 10, name: 'Neon', points: 20.1797 },
-];
 
 @Component({
     selector: 'app-home',
@@ -29,11 +21,62 @@ const LEADERBOARD_DATA: PlayerRank[] = [
   export class HomeComponent implements OnInit {
 
     displayedColumns: string[] = ['rank', 'name', 'points'];
-    dataSource = LEADERBOARD_DATA;
+    dataSource: PlayerRank[] = [];
     
-    constructor(public notificationService: NotificationService) {}
+    constructor(private userService: UserService,
+      public dialog: MatDialog,
+      private roomService: RoomService,
+      private router: Router) {}
     
     ngOnInit(): void {
-      this.notificationService.setNotificationNumbers();
+      // get rank wise data for leader board
+      this.getLeaderBoardData();
+    }
+
+    public getLeaderBoardData() {
+      this.userService.getUsers().subscribe((data: UsersModel) => {
+        if (data && data.users && data.users.length > 0) {
+          data.users.sort((a,b) => {
+            if (a.points > b.points) {
+              return 1;
+            } else {
+              return -1;
+            }
+          });
+          for (let i=0; i < data.users.length; i++) {
+            const x: PlayerRank = {
+              rank: i+1,
+              name: data.users[i].name,
+              points: data.users[i].points
+            };
+            this.dataSource.push(x);
+          }
+          this.dataSource = [...this.dataSource];
+        } 
+      }, (err) => {
+        console.error(err);
+      });
+    }
+
+    /**
+     * call create room method from RoomService
+     */
+    public createRoom() {
+      this.roomService.createRoom().subscribe((data: RoomModel) => {
+        // set room
+        this.router.navigate(['/default/room']);
+      }, (err) => {
+        console.error(err);
+      })
+    }
+
+    openJoinRoomDialog () {
+      const dialogRef = this.dialog.open(JoinRoomComponent, {
+        width: '250px'
+      });
+      dialogRef.afterClosed().subscribe(result => {
+        console.log('The dialog was closed');
+        // join given room
+      });
     }
   }

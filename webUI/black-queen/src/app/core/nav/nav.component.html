@@ -1,0 +1,22 @@
+<main>
+    <mat-toolbar color="basic">
+        <span>Black Queen</span>
+        <span class="spacer"></span>
+        <button mat-icon-button [matMenuTriggerFor]="notificationsPopover">
+          <mat-icon [matBadge]="notificationService.notificationNumbers" matBadgeColor="warn">notifications</mat-icon>
+          <!-- Include text description of the icon's meaning for screen-readers -->
+          <span class="cdk-visually-hidden">
+              Example with a home icon with overlaid badge showing the number 15
+          </span>
+        </button>
+        <div class="button-container">
+          <button mat-mini-fab color="primary">
+            <mat-icon>person</mat-icon>
+          </button>
+        </div>
+    </mat-toolbar>
+    <router-outlet></router-outlet>
+</main>
+<mat-menu #notificationsPopover xPosition="before" class="p0">
+  <app-notifications></app-notifications>
+</mat-menu>
