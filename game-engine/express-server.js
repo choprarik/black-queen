@@ -21,6 +21,7 @@ const contains = function(value, iterable) {
 
 
 var rooms = {};
+var user_cards = {};
 
 const send_message_to_websocket_server = function(users, message) {
 
@@ -68,7 +69,9 @@ const update_room = function(action, room_id, user_id, current_bid) {
             'users': [user_id],
             'last_bid_by': user_id,
             'cards': new Array(),
-            'users_point': { user_id: 0 }
+            'users_point': { user_id: 0 },
+            'partners': new Array(),
+            'double_partners': false
         }
         return true;
     } else if (action == 'update') {
@@ -152,11 +155,54 @@ app.post('/bid', (req, res) => {
     }
 })
 
+app.post('/bid/end', (req, res) => {
+    var room_id = req.body.room_id;
+
+    message = {
+        'current_bid': rooms[room_id].current_bid,
+        'bidding_user': rooms[room_id].last_bid_by
+    }
+
+    res.sendStatus(200).send(message);
+})
+
 ////////////////  Ends here
 
 
-user_cards = {};
-user_points = {};
+
+// Partners APIs
+
+app.post('/partner', (req, res) => {
+    var partner_cards = req.body.partner_cards; // Expected []
+    var rooms_user_cards = {};
+    var room_id = req.body.room_id;
+
+    // Filtering user's cards for respective room
+    rooms[room_id].users.forEach((user) => {
+        rooms_user_cards[user] = user_cards[user];
+    });
+
+    Object.entries(rooms_user_cards).forEach((element) => {
+        //element[0] => user_id
+        //element[1] => cards
+        for (var i = 0; i < element[1].length; i++) {
+            if (element[1][i] == partner_cards[0] || element[1][i] == partner_cards[1]) {
+                rooms[room_id].partners.push(element[0]);
+            }
+        }
+    });
+
+    // Checking for double partners
+    if (rooms[room_id].partners[0] == rooms[room_id].partners[1]) {
+        rooms[room_id].double_partners = true;
+    }
+
+    res.sendStatus(200).send(success_response);
+
+})
+
+////////////////  Ends here
+
 
 // Cards APIs
 app.get('/cards', (req, res) => {
@@ -203,6 +249,7 @@ app.post('/cards', (req, res) => {
         let winner_id = round_result.winner;
         let points = round_result.points;
 
+        // Add points to the winner's id
         rooms[room_id].user_points[winner_id] = Object.values(rooms[room_id].user_points[winner_id]) + points
     }
 
