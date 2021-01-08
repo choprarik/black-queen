@@ -71,7 +71,8 @@ const update_room = function(action, room_id, user_id, current_bid) {
             'cards': new Array(),
             'users_point': { user_id: 0 },
             'partners': new Array(),
-            'double_partners': false
+            'double_partners': false,
+            'non_partners': new Array()
         }
         return true;
     } else if (action == 'update') {
@@ -190,11 +191,22 @@ app.post('/partner', (req, res) => {
                 rooms[room_id].partners.push(element[0]);
             }
         }
+
+        if (contains(partner_cards[0], element[1])) {
+            rooms[room_id].partners.push(element[0]);
+        } else if (contains(partner_cards[1], element[1])) {
+            rooms[room_id].partners.push(element[0]);
+        } else {
+            rooms[room_id].non_partners.push(element[0]);
+        }
     });
+    // Adding the original caller in partners list
+    rooms[room_id].partners.push(rooms[room_id].last_bid_by);
 
     // Checking for double partners
     if (rooms[room_id].partners[0] == rooms[room_id].partners[1]) {
         rooms[room_id].double_partners = true;
+        rooms[room_id].partners = new Array(rooms[room_id].partners[0])
     }
 
     res.sendStatus(200).send(success_response);
@@ -255,6 +267,19 @@ app.post('/cards', (req, res) => {
 
     // Check if the game is over. If yes, determine the winning party and send the message
     var game_over = room_id[rooms].cards.length == 48;
+    var winners = new Array();
+    if (game_over) {
+        total_points = 0;
+        rooms[room_id].partners.forEach((partner_id) => {
+            total_points += rooms[room_id].user_points[partner_id]
+        })
+
+        if (total_points > rooms[room_id].current_bid) {
+            winners.push(...rooms[room_id].partners);
+        } else {
+            winners.push(...rooms[room_id].non_partners);
+        }
+    }
 
     var round_over_message = {
         "card_played_by": user_id,
@@ -264,7 +289,7 @@ app.post('/cards', (req, res) => {
 
     var game_over_message = {
         "game_over": true,
-        "winners": [] // TODO: Write logic to get winning players id
+        "winners": winners
     }
 
     if (!game_over) {
