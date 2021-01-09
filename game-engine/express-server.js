@@ -1,3 +1,4 @@
+const { RSA_PKCS1_PADDING } = require('constants');
 const express = require('express')
 const app = express()
 const port = 8088
@@ -64,7 +65,6 @@ const update_room = function(action, room_id, user_id, current_bid) {
         rooms[room_id] = {
             'startTime': Date.now(),
             'hostId': user_id,
-            'people': 1,
             'current_bid': 170, //default bidding,
             'users': [user_id],
             'last_bid_by': user_id,
@@ -136,8 +136,10 @@ app.post('/room/join', (req, res) => {
         send_message_to_websocket_server(users = [user_id], message = 'welcome to room')
     } else {
         send_message_to_websocket_server(users = [user_id], message = 'unable to join room')
-        res.send(error_response).status(500);
+        res.sendStatus(500).send(error_response); //TODO: Error 403 if game room full
     }
+
+    //TODO: distribute cards as soon as 6 people are in room
 })
 
 ////////////////// Ends here
@@ -150,7 +152,7 @@ app.post('/bid', (req, res) => {
     var current_bid = req.body.current_bid;
     if (update_room('bid', room_id, user_id, current_bid)) {
         res.send(success_response).status(200);
-        send_message_to_websocket_server(rooms[room_id].users, 'updated bid: ' + current_bid);
+        send_message_to_websocket_server(rooms[room_id].users, 'updated bid: ' + current_bid); //TODO: send bid by user in ws server
     } else {
         res.send(error_response).status(500);
     }
@@ -178,6 +180,8 @@ app.post('/partner', (req, res) => {
     var rooms_user_cards = {};
     var room_id = req.body.room_id;
 
+    //TODO: Add partner and user_id and last_bid_by check
+
     // Filtering user's cards for respective room
     rooms[room_id].users.forEach((user) => {
         rooms_user_cards[user] = user_cards[user];
@@ -186,22 +190,27 @@ app.post('/partner', (req, res) => {
     Object.entries(rooms_user_cards).forEach((element) => {
         //element[0] => user_id
         //element[1] => cards
+        var is_partner = false;
         for (var i = 0; i < element[1].length; i++) {
-            if (element[1][i] == partner_cards[0] || element[1][i] == partner_cards[1]) {
+            if (JSON.stringify(element[1][i]) == JSON.stringify(partner_cards[0]) || JSON.stringify(element[1][i]) == JSON.stringify(partner_cards[1])) {
                 rooms[room_id].partners.push(element[0]);
+                is_partner = true;
             }
         }
-
-        if (contains(partner_cards[0], element[1])) {
-            rooms[room_id].partners.push(element[0]);
-        } else if (contains(partner_cards[1], element[1])) {
-            rooms[room_id].partners.push(element[0]);
-        } else {
+        if (!is_partner && element[0] != rooms[room_id].last_bid_by) {
             rooms[room_id].non_partners.push(element[0]);
         }
+
+        // if (contains(partner_cards[0], element[1])) {
+        //     rooms[room_id].partners.push(element[0]);
+        // } else if (contains(partner_cards[1], element[1])) {
+        //     rooms[room_id].partners.push(element[0]);
+        // } else {
+        //     rooms[room_id].non_partners.push(element[0]);
+        // }
     });
     // Adding the original caller in partners list
-    rooms[room_id].partners.push(rooms[room_id].last_bid_by);
+    rooms[room_id].partners.push(String(rooms[room_id].last_bid_by));
 
     // Checking for double partners
     if (rooms[room_id].partners[0] == rooms[room_id].partners[1]) {
@@ -229,7 +238,7 @@ app.get('/cards', (req, res) => {
 
     for (var i = 0; i < cards.length; i++) {
         user_cards[rooms[room_id].users[i]] = cards[i];
-        send_message_to_websocket_server(rooms[room_id].users[i], cards[i]);
+        send_message_to_websocket_server([rooms[room_id].users[i]], String(cards[i]));
     }
     res.sendStatus(200).send(success_response);
 
@@ -247,12 +256,10 @@ app.post('/cards', (req, res) => {
     // Add the card to the current room session
     rooms[room_id].cards.push({ user_id: card });
 
-    filtered_user_list = rooms[room_id].users.filter((user) => {
-        user != user_id
-    });
+    filtered_user_list = rooms[room_id].users.splice(rooms[room_id].users.indexOf(user_id), 1);
 
     // Check if round is over. If yes, then calculate the points and store them
-    var round_over = room_id[rooms].cards.length % 6 == 0
+    var round_over = rooms[room_id].cards.length % 6 == 0
 
     if (round_over) {
         round_cards = rooms[room_id].cards.slice(Math.max(cards.length - 6, 0))
@@ -266,7 +273,7 @@ app.post('/cards', (req, res) => {
     }
 
     // Check if the game is over. If yes, determine the winning party and send the message
-    var game_over = room_id[rooms].cards.length == 48;
+    var game_over = rooms[room_id].cards.length == 48;
     var winners = new Array();
     if (game_over) {
         total_points = 0;
