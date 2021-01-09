@@ -69,11 +69,13 @@ const update_room = function(action, room_id, user_id, current_bid) {
             'users': [user_id],
             'last_bid_by': user_id,
             'cards': new Array(),
-            'users_point': { user_id: 0 },
+            'users_point': {},
             'partners': new Array(),
             'double_partners': false,
-            'non_partners': new Array()
+            'non_partners': new Array(),
+            'trump': undefined
         }
+        rooms[room_id].users_point[user_id] = 0;
         return true;
     } else if (action == 'update') {
         if (!is_room_full(room_id)) {
@@ -179,6 +181,9 @@ app.post('/partner', (req, res) => {
     var partner_cards = req.body.partner_cards; // Expected []
     var rooms_user_cards = {};
     var room_id = req.body.room_id;
+    var trump = req.body.trump;
+
+    rooms[room_id].trump = trump;
 
     //TODO: Add partner and user_id and last_bid_by check
 
@@ -251,18 +256,27 @@ app.post('/cards', (req, res) => {
     var room_id = req.body.room_id;
 
     // Remove the card from user's list
-    Object.values(user_cards[user_id]).splice(Object.values(user_cards[user_id]).indexOf(card), 1);
+    user_cards[user_id] = user_cards[user_id].filter((user_card) => JSON.stringify(card) != JSON.stringify(user_card))
 
     // Add the card to the current room session
-    rooms[room_id].cards.push({ user_id: card });
+    let _ = {}
+    _[user_id] = card;
+    rooms[room_id].cards.push(_);
 
-    filtered_user_list = rooms[room_id].users.splice(rooms[room_id].users.indexOf(user_id), 1);
+    filtered_user_list = rooms[room_id].users.filter((user) => user != user_id);
+
+    var card_message = {
+        "card_played_by": user_id,
+        "card": card
+    }
+
+    send_message_to_websocket_server(filtered_user_list, card_message);
 
     // Check if round is over. If yes, then calculate the points and store them
     var round_over = rooms[room_id].cards.length % 6 == 0
 
     if (round_over) {
-        round_cards = rooms[room_id].cards.slice(Math.max(cards.length - 6, 0))
+        round_cards = rooms[room_id].cards.slice(Math.max(rooms[room_id].cards.length - 6, 0))
         round_result = logics.determine_hand(rooms[room_id].trump, round_cards);
 
         let winner_id = round_result.winner;
@@ -270,6 +284,15 @@ app.post('/cards', (req, res) => {
 
         // Add points to the winner's id
         rooms[room_id].user_points[winner_id] = Object.values(rooms[room_id].user_points[winner_id]) + points
+
+        var round_over_message = {
+            "card_played_by": user_id,
+            "card": card,
+            "round_over": round_over
+        }
+
+        send_message_to_websocket_server(filtered_user_list, round_over_message);
+
     }
 
     // Check if the game is over. If yes, determine the winning party and send the message
@@ -286,25 +309,14 @@ app.post('/cards', (req, res) => {
         } else {
             winners.push(...rooms[room_id].non_partners);
         }
-    }
 
-    var round_over_message = {
-        "card_played_by": user_id,
-        "card": card,
-        "round_over": round_over
-    }
+        var game_over_message = {
+            "game_over": true,
+            "winners": winners
+        }
 
-    var game_over_message = {
-        "game_over": true,
-        "winners": winners
-    }
-
-    if (!game_over) {
-        send_message_to_websocket_server(filtered_user_list, round_over_message);
-    } else {
         send_message_to_websocket_server(rooms[room_id].users, game_over_message);
     }
-
 
     res.sendStatus(200).send(success_response);
 
