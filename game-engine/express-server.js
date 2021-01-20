@@ -1,10 +1,12 @@
-const { RSA_PKCS1_PADDING } = require('constants');
 const express = require('express')
 const app = express()
 const port = 8088
     // const https = require('https')
 const http = require('http');
+const errors = require('./classes/errors');
 const logics = require('./logics');
+const constants = require('./constants');
+
 
 app.use(express.json());
 
@@ -12,9 +14,6 @@ const success_response = {
     'status': 'OK'
 };
 
-const error_response = {
-    'status': 'KO'
-}
 
 const contains = function(value, iterable) {
     return iterable.indexOf(value) > -1 ? true : false;
@@ -31,6 +30,7 @@ const send_message_to_websocket_server = function(users, message) {
         'message': message
     });
 
+    //TODO: Get the following from config file
     const options = {
         hostname: 'localhost',
         port: 8089,
@@ -59,13 +59,26 @@ const is_room_full = function(room_id) {
     return rooms[room_id].users.length == 6;
 }
 
-const update_room = function(action, room_id, user_id, current_bid) {
+const request_validity_check = function() {
 
-    if (action == 'create') {
+    error_list = new Array();
+    //Assuming that arguments[0] will have all the named parameters passed to it.
+    keys = Object.keys(arguments[0]);
+    for (var i = 0; i < keys.length; i++) {
+        if (arguments[0][keys[i]] == undefined || String(arguments[0][keys[i]]).trim() == '') {
+            error_list.push(String(keys[i]) + 'is missing.')
+        }
+    }
+    return error_list;
+}
+
+const update_room = function(action, room_id, user_id, current_bid, next) {
+
+    if (action == constants.CREATE_METHOD) {
         rooms[room_id] = {
             'startTime': Date.now(),
             'hostId': user_id,
-            'current_bid': 170, //default bidding,
+            'current_bid': constants.DEFAULT_BID,
             'users': [user_id],
             'last_bid_by': user_id,
             'cards': new Array(),
@@ -76,26 +89,23 @@ const update_room = function(action, room_id, user_id, current_bid) {
             'trump': undefined
         }
         rooms[room_id].users_point[user_id] = 0;
-        return true;
-    } else if (action == 'update') {
+    } else if (action == constants.UPDATE_METHOD) {
         if (!is_room_full(room_id)) {
-            if (user_id in rooms[room_id].users) {
-                return false;
-            } else {
+            {
                 rooms[room_id].users.push(user_id);
                 rooms[room_id].users_point[user_id] = 0;
-                return true;
             }
         } else {
-            return false;
+            // Room is full
+            next(new errors.UnauthorizedRequestError('Room already full'));
         }
-    } else if (action == 'bid') {
-        if (contains(user_id, rooms[room_id].users) && current_bid > rooms[room_id].current_bid && current_bid <= 270) {
+    } else if (action == constants.BID_METHOD) {
+        if (contains(user_id, rooms[room_id].users) && current_bid > rooms[room_id].current_bid && current_bid <= constants.MAX_BID_ALLOWED) {
             rooms[room_id].current_bid = current_bid;
             rooms[room_id].last_bid_by = user_id;
-            return true;
+        } else {
+            next(new errors.BadRequestError('Bad request for bidding. Check bid amount'));
         }
-        return false;
     }
 }
 
@@ -106,9 +116,7 @@ app.get('/', (req, res) => {
 })
 
 app.post('/', (req, res) => {
-    console.dir(req.body);
-    console.log(req.body.tesT);
-    res.send({ 'this': 'is' }).status(200);
+    res.send({ 'status': 'OK' });
 })
 
 ////////////////////// Ends here
@@ -116,59 +124,68 @@ app.post('/', (req, res) => {
 
 // Room APIs
 app.get('/rooms', (req, res) => {
-    res.send(rooms).status(200);
+    /**
+     * API to get info about all rooms
+     */
+    res.status(200).send(rooms);
 })
 
 
-app.post('/room/join', (req, res) => {
+app.post('/room/join', (req, res, next) => {
 
-    room_id = req.body.room_id;
-    user_id = req.body.user_id;
-    var result;
+    var room_id = req.body.room_id;
+    var user_id = req.body.user_id;
+
+    var error_list = request_validity_check({ 'room_id': room_id, 'user_id': user_id });
+    if (error_list.length > 0) {
+        next(new errors.BadRequestError(error_list));
+    }
 
     if (rooms[room_id] == undefined) {
-        result = update_room('create', room_id, user_id)
+        update_room(constants.CREATE_METHOD, room_id, user_id, next);
     } else {
-        result = update_room('update', room_id, user_id)
+        update_room(constants.UPDATE_METHOD, room_id, user_id, next);
     }
 
-    if (result) {
-        // Marks success in operations
-        res.send(success_response).status(200);
-        send_message_to_websocket_server(users = [user_id], message = 'welcome to room')
-    } else {
-        send_message_to_websocket_server(users = [user_id], message = 'unable to join room')
-        res.sendStatus(500).send(error_response); //TODO: Error 403 if game room full
-    }
-
-    //TODO: distribute cards as soon as 6 people are in room
+    res.status(200).send(success_response);
 })
 
 ////////////////// Ends here
 
 
 // Bidding APIs
-app.post('/bid', (req, res) => {
+app.post('/bid', (req, res, next) => {
     var room_id = req.body.room_id;
     var user_id = req.body.user_id;
     var current_bid = req.body.current_bid;
-    if (update_room('bid', room_id, user_id, current_bid)) {
-        res.send(success_response).status(200);
-        send_message_to_websocket_server(rooms[room_id].users, 'updated bid: ' + current_bid); //TODO: send bid by user in ws server
-    } else {
-        res.send(error_response).status(500);
+
+    var error_list = request_validity_check({ 'room_id': room_id, 'user_id': user_id, 'current_bid': current_bid });
+    if (error_list.length > 0) {
+        next(new errors.BadRequestError(error_list));
     }
+    if (typeof(current_bid) != constants.NUMBER_TYPE) {
+        next(new errors.BadRequestError('Invalid bid value passed'));
+    }
+
+    update_room(constants.BID_METHOD, room_id, user_id, current_bid, next);
+    send_message_to_websocket_server(rooms[room_id].users, 'updated bid: ' + current_bid); //TODO: send bid by user in ws server
+    res.status(200).send(success_response);
 })
 
-app.post('/bid/end', (req, res) => {
+app.post('/bid/end', (req, res, next) => {
     var room_id = req.body.room_id;
 
-    message = {
+    var error_list = request_validity_check({ 'room_id': room_id });
+    if (error_list.length > 0) {
+        next(new errors.BadRequestError(error_list));
+    }
+
+    var message = {
         'current_bid': rooms[room_id].current_bid,
         'bidding_user': rooms[room_id].last_bid_by
     }
 
-    res.sendStatus(200).send(message);
+    res.status(200).send(message);
 })
 
 ////////////////  Ends here
@@ -183,9 +200,15 @@ app.post('/partner', (req, res) => {
     var room_id = req.body.room_id;
     var trump = req.body.trump;
 
-    rooms[room_id].trump = trump;
+    var error_list = request_validity_check({ 'room_id': room_id, 'trump': trump });
+    if (error_list.length > 0) {
+        next(new errors.BadRequestError(error_list));
+    }
+    if (typeof(trump) != constants.STRING_TYPE || trump.length != 1) {
+        next(new errors.BadRequestError('Invalid trump passed'))
+    }
 
-    //TODO: Add partner and user_id and last_bid_by check
+    rooms[room_id].trump = trump;
 
     // Filtering user's cards for respective room
     rooms[room_id].users.forEach((user) => {
@@ -205,14 +228,6 @@ app.post('/partner', (req, res) => {
         if (!is_partner && element[0] != rooms[room_id].last_bid_by) {
             rooms[room_id].non_partners.push(element[0]);
         }
-
-        // if (contains(partner_cards[0], element[1])) {
-        //     rooms[room_id].partners.push(element[0]);
-        // } else if (contains(partner_cards[1], element[1])) {
-        //     rooms[room_id].partners.push(element[0]);
-        // } else {
-        //     rooms[room_id].non_partners.push(element[0]);
-        // }
     });
     // Adding the original caller in partners list
     rooms[room_id].partners.push(String(rooms[room_id].last_bid_by));
@@ -223,7 +238,7 @@ app.post('/partner', (req, res) => {
         rooms[room_id].partners = new Array(rooms[room_id].partners[0])
     }
 
-    res.sendStatus(200).send(success_response);
+    res.status(200).send(success_response);
 
 })
 
@@ -235,8 +250,7 @@ app.get('/cards', (req, res) => {
     var params = req.query;
     var room_id = params.room_id == undefined ? undefined : params.room_id;
     if (room_id == undefined || rooms[room_id] == undefined) {
-        // res.send(error_response).status(500);
-        res.sendStatus(500).send(error_response);
+        next(new errors.BadRequestError('No room id specified.'));
     }
 
     var cards = logics.shuffle_cards();
@@ -245,7 +259,7 @@ app.get('/cards', (req, res) => {
         user_cards[rooms[room_id].users[i]] = cards[i];
         send_message_to_websocket_server([rooms[room_id].users[i]], String(cards[i]));
     }
-    res.sendStatus(200).send(success_response);
+    res.status(200).send(success_response);
 
 })
 
@@ -320,8 +334,41 @@ app.post('/cards', (req, res) => {
 
     res.sendStatus(200).send(success_response);
 
-})
+});
+
+////////////////// Ends here
+
+
+//An error handling middleware
+app.use(function(err, req, res, next) {
+    if (err.name == 'BadRequestError') {
+        res.status(400);
+        res.send(json({
+            'status': 400,
+            'message': err.message
+        }));
+    } else if (err.name == 'UnauthorizedRequestError') {
+        res.status(403);
+        res.send(json({
+            'status': 403,
+            'message': err.message
+        }));
+    } else if (err.name == 'ResourceNotFoundError') {
+        res.status(404);
+        res.send(json({
+            'status': 404,
+            'message': err.message
+        }));
+    } else {
+        res.status(500);
+        res.send(json({
+            'status': 500,
+            'message': err.message
+        }));
+    }
+});
+
 
 app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`)
+    console.log(`Express server listening at http://localhost:${port}`)
 })

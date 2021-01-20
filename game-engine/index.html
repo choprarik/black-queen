@@ -12,9 +12,8 @@
     const ws = new WebSocket('ws://localhost:8899');
     ws.onopen = function() {
         console.log('WebSocket Client Connected');
-        // ws.send('012-2123-2321');
         var sendObject = {
-            userName: 2,
+            userName: 6,
             pm: true,
             message: "how are you?"
         };
