@@ -17,6 +17,9 @@ app.get('/', function(req, res, next) {
     // console.log(constants.CREATE_METHOD);
 
     // res.send(JSON.stringify(new response_obj('test')));
+    next(new Error('test'));
+    return;
+    console.log('Do you get this as well?')
 });
 
 app.get('/test', function(req, res, next) {
