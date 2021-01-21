@@ -2,6 +2,7 @@ var rooms = require('./commons').rooms;
 var constants = require('./constants');
 var errors = require('./classes/errors');
 const http = require('http');
+const config = require('./config');
 
 
 const contains = function(value, iterable) {
@@ -17,8 +18,8 @@ const send_message_to_websocket_server = function(users, message) {
 
     //TODO: Get the following from config file
     const options = {
-        hostname: 'localhost',
-        port: 8089,
+        hostname: config.WEBSOCKET_SERVER_HOSTNAME,
+        port: config.WEBSOCKET_SERVER_PORT,
         path: '/',
         method: 'POST',
         headers: {

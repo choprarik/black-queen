@@ -1,7 +1,6 @@
-const express = require('express')
-const app = express()
-const port = 8088
-    // const https = require('https')
+const express = require('express');
+const app = express();
+const config = require('./config');
 
 var rooms_router = require('./routes/room');
 var bid_router = require('./routes/bidding');
@@ -10,10 +9,10 @@ var cards_router = require('./routes/cards');
 
 
 app.use(express.json());
-app.use('/rooms', rooms_router);
-app.use('/bid', bid_router);
-app.use('/partner', partner_router);
-app.use('/cards', cards_router);
+app.use(config.ROOMS_API, rooms_router);
+app.use(config.BIDDING_API, bid_router);
+app.use(config.PARTNER_API, partner_router);
+app.use(config.CARDS_API, cards_router);
 
 // Home APIs
 app.get('/', (req, res) => {
@@ -27,9 +26,9 @@ app.post('/', (req, res) => {
 ////////////////////// Ends here
 
 //An error handling middleware
-app.use(function(err, req, res, next) {
+app.use(function(err, req, res) {
     if (err.name == 'BadRequestError') {
-        // res.status(400);
+        res.status(400);
         res.send(({
             'status': 400,
             'message': err.message
@@ -56,6 +55,6 @@ app.use(function(err, req, res, next) {
 });
 
 
-app.listen(port, () => {
+app.listen(config.EXPRESS_SERVER_PORT, () => {
     console.log(`Express server listening at http://localhost:${port}`)
 })

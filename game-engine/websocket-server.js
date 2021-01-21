@@ -1,5 +1,7 @@
+const config = require('./config');
+
 var WebSocketServer = require('ws').Server,
-    wss = new WebSocketServer({ port: 8899 }),
+    wss = new WebSocketServer({ port: config.WEBSOCKET_PORT }),
     users_conn_mappings = {};
 
 
@@ -23,9 +25,8 @@ wss.on('connection', function(ws) {
 console.log('WebSocketServer started');
 
 
-const express = require('express')
-const app = express()
-const port = 8089
+const express = require('express');
+const app = express();
 
 app.use(express.json());
 
@@ -42,9 +43,10 @@ app.post('/', (req, res) => {
         }
     })
 
-    res.send({ 'status': 'Received' }).statusCode(200);
+    res.status(200);
+    res.send({ 'status': 'Received' });
 })
 
-app.listen(port, () => {
+app.listen(config.WEBSOCKET_SERVER_PORT, () => {
     console.log(`Websocket app listening at http://localhost:${port}`)
 })
