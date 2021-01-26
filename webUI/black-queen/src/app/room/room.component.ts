@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { RoomModel } from '../models/room.model';
+import { RoomModel } from './models/room.model';
 
 @Component({
   selector: 'app-room',
@@ -12,6 +12,14 @@ export class RoomComponent implements OnInit {
 
   currentRoom: RoomModel = {};
   ngOnInit(): void {
+  }
+
+  invitePlayers() {
+    // TODO
+  }
+
+  startGame() {
+    // TODO
   }
 
 }

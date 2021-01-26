@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RoomComponent } from './room/room.component';
+import { RoomComponent } from './room.component';
 import { CoreModule } from '../core/core.module';
 import { MaterialModule } from '../material/material.module';
 

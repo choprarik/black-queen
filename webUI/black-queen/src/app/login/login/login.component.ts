@@ -32,7 +32,7 @@ export class LoginComponent implements OnInit {
           verticalPosition: 'top'
         });
         this.userService.fetchUser(userId.id);
-        this._router.navigate(['/home']);
+        this._router.navigate(['/default/home']);
       }
     }, (err) => {
       /* if (err.error) {

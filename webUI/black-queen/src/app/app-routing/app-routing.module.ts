@@ -6,7 +6,7 @@ import { GameRoomComponent } from '../game/game-room/game-room.component';
 import { HomeComponent } from '../home/home.component';
 import { LoginComponent } from '../login/login/login.component';
 import { SignupComponent } from '../login/signup/signup.component';
-import { RoomComponent } from '../room/room/room.component';
+import { RoomComponent } from '../room/room.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
