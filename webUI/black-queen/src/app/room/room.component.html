@@ -1,0 +1,65 @@
+<main>
+    <div style="margin: 20px;">
+      <mat-grid-list cols="3" gutterSize="12" rowHeight="450px">
+        <mat-grid-tile [colspan]="2">
+          <mat-card style="width: 95%; height: 90%;" class="primary transparent">
+            <mat-card-header>
+              <mat-card-title style="margin: 16px;">Players</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <mat-grid-list cols="1" gutterSize="12" rowHeight="250px">
+                  <mat-list class="row-layout">
+                      <mat-list-item>
+                          <mat-card>
+                              <mat-card-header>
+                                  <mat-card-title>Player 1</mat-card-title>
+                              </mat-card-header>
+                              <mat-card-content>
+                                  <img src="" class="avatar">
+                              </mat-card-content>
+                          </mat-card>
+                      </mat-list-item>
+                      <mat-list-item>
+                        <mat-card>
+                            <mat-card-header>
+                                <mat-card-title>Player 2</mat-card-title>
+                            </mat-card-header>
+                            <mat-card-content>
+                                <img src="" class="avatar">
+                            </mat-card-content>
+                        </mat-card>
+                    </mat-list-item>
+                  </mat-list>
+              </mat-grid-list>
+              <mat-grid-list cols="2" gutterSize="12" rowHeight="100px">
+                <mat-grid-tile>
+                  <button mat-raised-button color="primary" (click)="invitePlayers()">Invite Players</button>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                  <button mat-raised-button color="primary" (click)="startGame();">Start Game</button>
+                </mat-grid-tile>
+              </mat-grid-list>
+            </mat-card-content>
+          </mat-card> 
+        </mat-grid-tile>
+        <mat-grid-tile [colspan]="1">
+          <mat-card style="width: 95%; height: 90%;" class="secondary transparent">
+            <mat-card-header style="margin: 16px;">
+              <div mat-card-avatar>
+                <mat-icon>emoji_events</mat-icon>
+              </div>
+              <mat-card-title>Friends</mat-card-title>
+            </mat-card-header>
+              <mat-card-content class="table-container">
+                <mat-list>
+                    <mat-list-item>Raju</mat-list-item>
+                    <mat-divider></mat-divider>
+                    <mat-list-item>Farhan</mat-list-item>
+                    <mat-divider></mat-divider>
+                </mat-list>
+              </mat-card-content>
+          </mat-card>
+        </mat-grid-tile>
+      </mat-grid-list>
+    </div>
+</main>

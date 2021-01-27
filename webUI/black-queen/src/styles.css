@@ -5,3 +5,15 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .p0 {
     padding: 0;
 }
+
+.main-body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.transparent {
+    background-color: rgba(170, 163, 163, 0.781);
+    color: white;
+}

@@ -1,0 +1,8 @@
+.row-layout {
+    display: flex;
+    flex-direction: row;
+}
+.avatar {
+    width: 75px;
+    height: 100px;
+}

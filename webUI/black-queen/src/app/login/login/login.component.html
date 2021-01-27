@@ -1,17 +1,18 @@
-
-<mat-card class="card">
-    <form>
-        <mat-form-field class="full-width">
-            <mat-label>Username</mat-label>
-            <input name="username" type="text" [(ngModel)]="loginInfo.username" matInput>
-        </mat-form-field>
-        <br>
-        <mat-form-field class="full-width">
-            <mat-label>Password</mat-label>
-            <input name="passcode" type="password" [(ngModel)]="loginInfo.passcode" matInput>
-        </mat-form-field>
-    </form>
-    <div>
-        <button mat-raised-button color="primary" type="submit" (click)="onLoginClick()">Login</button>
-    </div>
-</mat-card>
+<div class="main-body">
+    <mat-card class="login-card transparent">
+        <form>
+            <mat-form-field class="full-width">
+                <mat-label>Username</mat-label>
+                <input name="username" type="text" [(ngModel)]="loginInfo.username" matInput>
+            </mat-form-field>
+            <br>
+            <mat-form-field class="full-width">
+                <mat-label>Password</mat-label>
+                <input name="passcode" type="password" [(ngModel)]="loginInfo.passcode" matInput>
+            </mat-form-field>
+        </form>
+        <div>
+            <button mat-raised-button color="primary" type="submit" (click)="onLoginClick()">Login</button>
+        </div>
+    </mat-card>
+</div>

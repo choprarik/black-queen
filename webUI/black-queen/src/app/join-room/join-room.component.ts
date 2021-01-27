@@ -40,6 +40,8 @@ export class JoinRoomComponent implements OnInit {
       }, (err) => {
         console.error(err);
       });
+      // for testing
+      this.router.navigate(['/default/room']);
     }
   }
 

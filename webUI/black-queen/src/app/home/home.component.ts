@@ -68,6 +68,7 @@ export interface PlayerRank {
       }, (err) => {
         console.error(err);
       })
+      this.router.navigate(['/default/room']);
     }
 
     openJoinRoomDialog () {

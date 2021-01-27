@@ -1,5 +1,6 @@
-.gameroom {
-    background-color: lavender;
+.game-room {
+    height: inherit;
+    margin: 32px 32px 32px 32px;
 }
 .card-list-container {
     display: flex;    
